@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<meta name="robots" content="noindex" />
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Perfect Pizza</title>
+    <style id="jsbin-css">
+      body {
+        background: white;
+        font-family: arial, sans-serif;
+        background-color: #abafb2;
+        font-size: 0.75em;
+      }
+
+      .small {
+        background-color: #dc5443;
+      }
+
+      .medium {
+        background-color: #f6cd44;
+      }
+
+      .large {
+        background-color: #6596b3;
+        flex: 2;
+      }
+
+      .small img {
+        width: 4em;
+      }
+
+      .medium img {
+        width: 5em;
+      }
+
+      .large img {
+        width: 7em;
+      }
+
+      .footer {
+        display: flex;
+      }
+
+      .footer div {
+        flex: 1;
+        /*   border: 1px solid;
+   */
+        margin-top: 1em;
+        padding: 1em;
+        background-color: #262429;
+        color: #fefefe;
+      }
+
+      button {
+        width: fit-content;
+        height: fit-content;
+      }
+
+      .cart {
+        background-color: #fefefe;
+        padding: 1em;
+      }
+
+      .small-cart,
+      .medium-cart,
+      .large-cart {
+        padding-bottom: 1em;
+      }
+
+      button {
+        margin: 0.5em;
+      }
+
+      .small,
+      .medium,
+      .large {
+        display: grid;
+        grid-template-columns: auto auto;
+        padding: 1em;
+        column-gap: 1em;
+        justify-content: left;
+        justify-items: center;
+        align-items: end;
+      }
+
+      .details {
+        grid-row: span 2;
+        padding: 0em;
+      }
+
+      @media (min-width: 768px) {
+        .specials {
+          display: flex;
+        }
+
+        .specials div {
+          flex: 1;
+          /* border: 1px solid lightgrey; */
+          margin: 0em;
+        }
+
+        body {
+          font-size: 1em;
+        }
+
+        .small,
+        .medium,
+        .large {
+          display: unset;
+        }
+
+        .details {
+          grid-row: unset;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <script
+      src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.0/dist/alpine.min.js"
+      defer
+    ></script>
+    <div
+      x-data="{small:0, medium:0, large:0, get total(){ return (this.large * 114.99 + this.medium * 78.99 + this.small * 48.99).toFixed(2)}, checkout: false, paid:''}"
+    >
+      <div>
+        <h1>Perfect Pizza</h1>
+      </div>
+      <div class="cart" x-show="small != 0 || medium != 0 || large != 0">
+        <h2>Your cart</h2>
+        <template x-if="large > 0">
+          <div class="large-cart">
+            Large: <template x-if="!checkout"></template
+            ><button @click="large++">+</button><span x-text="large"></span
+            ><template x-if="!checkout"
+              ><button @click="large--">-</button></template
+            >
+            <span>@ R<span x-text="(large * 114.99).toFixed(2)"></span></span>
+          </div>
+        </template>
+        <template x-if="medium > 0">
+          <div class="medium-cart">
+            Medium:
+            <template x-if="!checkout"
+              ><button @click="medium++">+</button></template
+            ><span x-text="medium"></span
+            ><template x-if="!checkout"
+              ><button @click="medium--">-</button></template
+            >
+            <span>@ R<span x-text="(medium * 78.99).toFixed(2)"></span></span>
+          </div>
+        </template>
+        <template x-if="small > 0">
+          <div class="small-cart">
+            Small:
+            <template x-if="!checkout">
+              <button @click="small++">+</button> </template
+            ><span x-text="small"></span
+            ><template x-if="!checkout"
+              ><button @click="small--">-</button></template
+            >
+            <span>@ R<span x-text="(small * 48.99).toFixed(2)"></span></span>
+          </div>
+        </template>
+        <div>Total: R<span x-text="total"></span></div>
+        <template x-if="!checkout">
+          <button @click="checkout=!checkout">Checkout</button>
+        </template>
+        <template x-if="checkout">
+          <label
+            >Amount received from costumer: R<input
+              type="number"
+              min="0"
+              step="0.01"
+              x-model="paid"
+          /></label>
+        </template>
+        <template x-if="paid == total && checkout">
+          <span>
+            <div style="color: green">successful payment</div>
+            <button @click="small=0; medium=0; large=0; checkout=false;">
+              Complete Order
+            </button>
+          </span>
+        </template>
+        <template x-if="(parseInt(paid) < total && paid != total && checkout)">
+          <span>
+            <div style="color: red">insufficient funds</div>
+            <button @click="small=0; medium=0; large=0; checkout=false;">
+              Cancel order
+            </button>
+          </span>
+        </template>
+
+        <template x-if="parseInt(paid) > total && checkout">
+          <span>
+            <div style="color: green">
+              successful payment, change: R<span
+                x-text="(parseInt(paid) - total).toFixed(2)"
+              ></span>
+            </div>
+            <button
+              @click="small=0; medium=0; large=0; checkout=false; paid=''"
+            >
+              Complete Order
+            </button>
+          </span>
+        </template>
+      </div>
+      <div class="specials">
+        <div class="large">
+          <img
+            src="https://image.shutterstock.com/image-vector/italian-pizza-tomato-sausage-olive-600w-554691619.jpg"
+            alt=""
+          />
+          <div class="details">
+            <h2>Large Pizza</h2>
+            <h3>R114.99</h3>
+            <i>
+              <ul>
+                <li>large margeritha pizza with 3 toppings</li>
+                <li>max. 3 or less meat topping.</li>
+                <li>3 or less other toppings.</li>
+              </ul>
+            </i>
+          </div>
+          <button @click="large++">Order</button>
+        </div>
+        <div class="medium">
+          <img
+            src="https://image.shutterstock.com/image-vector/italian-pizza-tomato-sausage-olive-600w-554691619.jpg"
+            alt=""
+          />
+          <div class="details">
+            <h2>Medium Pizza</h2>
+            <h3>R78.99</h3>
+            <i>
+              <ul>
+                <li>medium margeritha pizza with 3 toppings</li>
+                <li>max. 2 or less meat topping.</li>
+                <li>3 or less other toppings.</li>
+              </ul>
+            </i>
+          </div>
+          <button @click="medium++">Order</button>
+        </div>
+
+        <div class="small">
+          <img
+            src="https://image.shutterstock.com/image-vector/italian-pizza-tomato-sausage-olive-600w-554691619.jpg"
+            alt=""
+          />
+          <div class="details">
+            <h2>Small Pizza</h2>
+            <h3>R48.99</h3>
+            <i>
+              <ul>
+                <li>small pizza with 3 toppings</li>
+                <li>1 meat topping.</li>
+                <li>3 or less other toppings.</li>
+              </ul>
+            </i>
+          </div>
+          <button @click="small++">Order</button>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="contact">
+          <strong>Contact us at:</strong>
+          (021)-541-1000
+
+          <strong>twitter /fb /insta </strong> @perfectpizza
+        </div>
+        <div class="address">
+          Pizza Plaza
+          <br />
+          Dough Road
+          <br />
+          Base Town
+          <br />
+          7890
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
